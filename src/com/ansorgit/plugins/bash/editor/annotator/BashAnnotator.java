@@ -61,7 +61,7 @@ public class BashAnnotator implements Annotator {
     private static final TokenSet noWordHighlightErase = TokenSet.orSet(
             TokenSet.create(BashTokenTypes.STRING2),
             BashTokenTypes.arithLiterals,
-            TokenSet.create(BashElementTypes.VAR_ELEMENT));
+            TokenSet.create(BashElementTypes.VAR_ELEMENT, BashElementTypes.SUBSHELL_COMMAND, BashElementTypes.BACKQUOTE_COMMAND));
 
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder annotationHolder) {
         if (element instanceof BashBackquote) {
@@ -136,13 +136,10 @@ public class BashAnnotator implements Annotator {
         //we have to mark the remaped tokens (which are words now) to have the default word formatting.
         PsiElement child = bashWord.getFirstChild();
 
-        while (child != null && false) {
+        while (child != null) {
             if (!noWordHighlightErase.contains(child.getNode().getElementType())) {
                 Annotation annotation = annotationHolder.createInfoAnnotation(child, null);
                 annotation.setEnforcedTextAttributes(TextAttributes.ERASE_MARKER);
-
-                annotation = annotationHolder.createInfoAnnotation(child, null);
-                annotation.setEnforcedTextAttributes(EditorColorsManager.getInstance().getGlobalScheme().getAttributes(HighlighterColors.TEXT));
             }
 
             child = child.getNextSibling();
